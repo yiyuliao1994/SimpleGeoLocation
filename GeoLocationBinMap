@@ -1,0 +1,212 @@
+<!-- 
+	This is lab1 - geolocation
+	 I, Yiyu,liao, student number 000331066, certify that this material is my
+    original work. No other person's work has been used without due
+    acknowledgement and I have not made my work available to anyone else.
+
+
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Hamilton Recreation Center</title>
+        <style type='text/css'>
+            button{background-color:brown;
+                   color:white;}
+            body{margin:0;padding:0;overflow:hidden;font-family:'Segoe UI',Helvetica,Arial,Sans-Serif}
+            html {
+                overflow-x: hidden;
+                height: auto;
+            }
+
+        </style>
+        <meta http-equiv='Content-Type' content='text/html; charset=utf-8'/>
+        <script type='text/javascript' src='https://www.bing.com/api/maps/mapcontrol?key=AlpL4jzLbdjO9lOTtP73xB26gxjW9WsXj-914yp-hEbhTd4GCFLbx7j_Q19xz08r'></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script type='text/javascript'>
+
+
+            var map; // create variables
+            var pin;
+		 var listRecs = [{"name": "Carlisle Community Centre & Arena", "address": "1496 Centre Road", "city": "Carlisle", "phone": "905-689-7283", "latitude": "43.39606", "longtitude": "-79.98293"}, {"name": "Chedoke Twin Pad Arena", "address": "91 Chedmac Dr.", "city": "Hamilton", "phone": "905-546-2429", "latitude": "43.23889", "longtitude": "-79.92077"}, {"name": "Coronation Arena and Pool", "address": "81 Macklin St. North", "city": "Hamilton", "phone": "905-546-3109", "latitude": "43.2646", "longtitude": "-79.89598"}, {"name": "Eastwood Arena", "address": "111 Burlington St. East", "city": "Hamilton", "phone": "905-546-3152", "latitude": "43.27171", "longtitude": "-79.85564"}, {"name": "Glanbrook Arena & Auditorium", "address": "4300 Binbrook Road", "city": "Binbrook", "phone": "905-692-9331", "latitude": "43.12911", "longtitude": "-79.83908"}, {"name": "Inch Park Arena & Pool", "address": "400 Queensdale Ave.", "city": "Hamilton", "phone": "905-546-4922", "latitude": "43.23712", "longtitude": "-79.85937"}, {"name": "Lawfield Arena", "address": "150 Folkstone Ave.", "city": "Hamilton", "phone": "905-546-4923", "latitude": "43.21464", "longtitude": "-79.85116"}, {"name": "Market Street (J.L. Grightmire) Arena", "address": "35 Market St. South", "city": "Dundas", "phone": "905-540-6678", "latitude": "43.26596", "longtitude": "-79.96339"}, {"name": "Mohawk 4 Ice Centre", "address": "710 Mountain Brow Blvd.", "city": "Hamilton", "phone": "905-318-5111", "latitude": "43.21037", "longtitude": "-79.81616"}, {"name": "Morgan Firestone Arena", "address": "385 Jerseyville Road West", "city": "Ancaster", "phone": "905-546-3769", "latitude": "43.21674", "longtitude": "-80.00733"}, {"name": "Mountain (Dave Andreychuk) Arena", "address": "25 Hester St.", "city": "Hamilton", "phone": "905-546-4938", "latitude": "43.22558", "longtitude": "-79.88101"}, {"name": "North Wentworth Twin-Pad Arena", "address": "27 Hwy 5", "city": "Flamborough", "phone": "905-689-6666", "latitude": "43.3102291", "longtitude": "-79.9202291"}, {"name": "Olympic Arena", "address": "70 Olympic Dr.", "city": "Dundas", "phone": "905-540-6686", "latitude": "43.27292", "longtitude": "-79.93426"}, {"name": "Parkdale (Pat Quinn) Arena and Pool", "address": "1770 Main St. East", "city": "Hamilton", "phone": "905-546-4785", "latitude": "43.2366018", "longtitude": "-79.7939014"}, {"name": "Rosedale Arena and Pool", "address": "100 Greenhill Ave.", "city": "Hamilton", "phone": "905-546-4805", "latitude": "43.21986", "longtitude": "-79.80896"}, {"name": "Saltfleet Arena", "address": "24 Sherwood Park Road", "city": "Stoney Creek", "phone": "905-643-3883", "latitude": "43.21851", "longtitude": "-79.70443"}, {"name": "Scott Park Arena", "address": "876 Cannon St. East", "city": "Hamilton", "phone": "905-546-4919", "latitude": "43.25033", "longtitude": "-79.83038"}, {"name": "Spring Valley Arena", "address": "29 Orchard Dr.", "city": "Ancaster", "phone": "905-648-4404", "latitude": "43.217", "longtitude": "-79.99774"}, {"name": "Stoney Creek Arena", "address": "37 King St. West", "city": "Stoney Creek", "phone": "905-662-2426", "latitude": "43.26648", "longtitude": "-79.95509"}, {"name": "Valley Park Arena & Rec Centre", "address": "970 Paramount Dr.", "city": "Stoney Creek", "phone": "905-573-3600", "latitude": "43.19332", "longtitude": "-79.79796"}];
+
+			// load map and push pin with jsondata
+            function loadMapScenario() {
+	
+                map = new Microsoft.Maps.Map(document.getElementById('myMap'), {});
+                map.setView(
+                        {center:
+                new Microsoft.Maps.Location(43.27171, -79.85564)});
+                var center = map.getCenter();
+				
+				 navigator.geolocation.getCurrentPosition(function (position) {
+				 var position = "GPS puts you at:</br>" + "Latitude: "+ position.coords.latitude + "</br>"+ "Longitude: " + position.coords.longitude;
+					$("p").html(position);
+			
+        },function(error){
+			var error = "GPS Co - ordinates Unavaliable!!Default values used.</br>PERMISSION_DENIED: The location acquisition </br> process failed because the document does not</br> have permission to use the Geolocation API"; 
+			$("p").html(error);
+		});
+                var infobox = new Microsoft.Maps.Infobox(center, {title: "Map center", description: "Current Location", visible: false});
+                infobox.setMap(map);
+                var location = [];
+                var information = [];
+                for (var i = 0; i < listRecs.length; i++) {
+                    location[i] = new Microsoft.Maps.Location(listRecs[i]["latitude"], listRecs[i]["longtitude"]);
+                    information[i] = listRecs[i]["address"] + " " + listRecs[i]["city"] + " " + listRecs[i]["phone"] + "</br>" + "<a href = https://www.bing.com/maps?osid="+listRecs[i]["address"]+ listRecs[i]["city"]  "&cp="+listRecs[i]["latitude"]+"~"+listRecs[i]["longitude"]+"&lvl=16&v=2&sV=2&form=S00027 >Bing Map</a>" + " " + "<img src= 'https://www.bingmapsportal.com/Content/images/poi_custom.png' align = 'right' style = 'margin-left:5px'/>" + "<a href = http://dev.virtualearth.net/REST/v1/Locations?o=xml&q=70%20Olympic%20Dr,%20Dundas,%20ON&key=Ag-9UmaOu3hCq2d2bxFTnt2ryCnUmD81o8_dEMuHCqbAFJ0TMwiY1IuhzPUjRaC6>Lat/Lng</a>";
+                    pin = new Microsoft.Maps.Pushpin(location[i]);
+                    pin.metadata = {
+                        title: listRecs[i]["name"],
+                        description: information[i]
+                    };
+                    Microsoft.Maps.Events.addHandler(pin, 'click', pushpinClicked); // add into push pin to show the infobox
+
+                    map.entities.push(pin);
+
+                }
+		
+		// set event handler for click push pins
+		
+                function pushpinClicked(e) {
+                    if (e.target.metadata) {
+                        infobox.setOptions({
+                            location: e.target.getLocation(),
+                            title: e.target.metadata.title,
+                            description: e.target.metadata.description,
+                            visible: true
+                        });
+                    }
+                }
+
+			// when user click all button to give all push pin back
+                $("#showAll").click(function () {
+                    for (var i = 0; i < listRecs.length; i++) {
+                        location[i] = new Microsoft.Maps.Location(listRecs[i]["latitude"], listRecs[i]["longtitude"]);
+                        information[i] = listRecs[i]["address"] + " " + listRecs[i]["city"] + " " + listRecs[i]["phone"] + "</br>" + "<a href = https://www.bing.com/maps?osid=e21e351c-6708-4368-96d8-8f3109280453&cp=43.27292~-79.93426&lvl=16&v=2&sV=2&form=S00027 >Bing Map</a>" + " " + "<img src= 'https://www.bingmapsportal.com/Content/images/poi_custom.png' align = 'right' style = 'margin-left:5px'/>" + "<a href = http://dev.virtualearth.net/REST/v1/Locations?o=xml&q=70%20Olympic%20Dr,%20Dundas,%20ON&key=Ag-9UmaOu3hCq2d2bxFTnt2ryCnUmD81o8_dEMuHCqbAFJ0TMwiY1IuhzPUjRaC6>Lat/Lng</a>";
+                        pin = new Microsoft.Maps.Pushpin(location[i]);
+                        pin.metadata = {
+                            title: listRecs[i]["name"],
+                            description: information[i]
+                        };
+                        Microsoft.Maps.Events.addHandler(pin, 'click', pushpinClicked);
+                        map.entities.push(pin);
+                    }
+
+                });
+
+			// filter button function by using jquery
+                $("#showCar").click(function () {
+                    for (var i = map.entities.getLength() - 1; i >= 0; i--) {
+                      
+                        if (listRecs[i]["city"] !== "Carlisle") {
+                            map.entities.removeAt(i);
+                        }
+                    }
+
+                });
+// filter button function by using jquery
+                $("#showHam").click(function () {
+                    for (var i = map.entities.getLength() - 1; i >= 0; i--) {
+                        if (listRecs[i]["city"] !== "Hamilton") {
+                            map.entities.removeAt(i);
+                        }
+                    }
+
+                });
+				
+				// filter button function by using jquery
+                $("#showBin").click(function () {
+                    for (var i = map.entities.getLength() - 1; i >= 0; i--) {
+                        if (listRecs[i]["city"] !== "Binbrook") {
+                            map.entities.removeAt(i);
+                        }
+                    }
+
+                });
+				
+				// filter button function by using jquery
+                $("#showDundas").click(function () {
+                    for (var i = map.entities.getLength() - 1; i >= 0; i--) {
+                        if (listRecs[i]["city"] !== "Dundas") {
+                            map.entities.removeAt(i);
+                        }
+                    }
+
+                });
+
+			// filter button function by using jquery
+                $("#showAncaster").click(function () {
+                    for (var i = map.entities.getLength() - 1; i >= 0; i--) {
+                        if (listRecs[i]["city"] !== "Ancaster") {
+                            map.entities.removeAt(i);
+                        }
+                    }
+
+                });
+				// filter button function by using jquery
+				
+                $("#showFlam").click(function () {
+                    for (var i = map.entities.getLength() - 1; i >= 0; i--) {
+                        if (listRecs[i]["city"] !== "Flamborough") {
+                            map.entities.removeAt(i);
+                        }
+                    }
+
+                });
+				
+				// filter button function by using jquery
+                $("#showStoney").click(function () {
+                    for (var i = map.entities.getLength() - 1; i >= 0; i--) {
+                        if (listRecs[i]["city"] !== "Stoney Creek") {
+                            map.entities.removeAt(i);
+                        }
+                    }
+
+                });
+
+
+
+
+	// json button function by using jquery
+                var jsondata = JSON.stringify(listRecs);
+
+                $("#showJson").html(jsondata);
+
+                $("#showJson").hide();
+                $("#click").click(function () {
+
+                    $("#showJson").toggle();
+
+                });
+
+
+            }
+
+
+
+        </script>
+    </head>
+    <body onload='loadMapScenario();'>
+	<p></p>
+        <div id = 'filterButton'>
+            <button id = 'showAll'> All</button>
+            <button id = 'showCar'> Carlisle</button>
+            <button id = 'showHam'> Hamilton</button>
+            <button id = 'showBin'> Binbrook</button>
+            <button id = 'showDundas'> Dundas</button>
+            <button id = 'showAncaster'> Ancaster</button>
+            <button id = 'showFlam'> Flamborough</button>
+            <button id = 'showStoney'> Stoney Creek</button>
+
+        </div><br>
+        <div id='printoutPanel'></div>
+
+        <div id='myMap' style='width: 800px; height: 600px;'></div>
+
+        <button id = 'click'>Show JSON Data</button>
+        <div id = "showJson">
+
+        </div>
+		
+    </body>
+</html>
